@@ -1,2 +1,3 @@
 # bash_script
-tuto pour apprendre les bases des scripts bash
+Tuto pour apprendre les bases des scripts bash
+via WSL
