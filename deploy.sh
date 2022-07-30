@@ -22,8 +22,10 @@ echo ""
 nb_machine=1
 [ "$2" != "" ] && nb_machine=$2
 
-echo "docker run -tid --name $USER-alpine alpine:latest"
-
+# 1ere boucle de 1 à x machines
+for i in $(seq 1 $nb_machine);do
+  echo "docker run -tid --name $USER-alpine-$i alpine:latest"
+done
 echo "${nb_machine} machines créés"
 
 elif [ "$1" == "--drop" ];then
@@ -32,6 +34,9 @@ echo "L'option choisie est "$1
 echo ""
 echo "docker rm -f $USER-alpine"
 echo 'Drop ts les conteneurs de jean'
+echo "docker rm -f \$(docker ps -a \| grep \$USER-alpine | awk '{print \$1}')"
+# docker rm -f $(docker ps -a | grep $USER-alpine | awk '{print $1}')  
+echo "recupere les id \$1 présent en 1ere colonne de docker ps des conteneurs s'appelant $USER-alpine"
 
 elif [ "$1" == "--info" ];then
 echo ""
