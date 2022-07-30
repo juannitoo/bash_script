@@ -7,12 +7,22 @@
 #
 # ./deploy.sh --arg
 ####################################################################
+function show_help(){
+  echo "
+  Options :
+  - --help : affiche l'aide
+  - --create : lancer des conteneurs arg:number:nbre de conteneur
+  - --drop : supprimer les conteneurs créer par deploy.sh
+  - --info : caractéristiques des conteneurs (ip,nom,user ...)
+  - --start : redémarrage des conteneurs du script
+  - --stop : arrête les conteneurs du script
+  - --ansible : déploiement arborescence ansible
+  "
+}
 
 if [ "$1" == "--help" ];then
   # $1 est le 1er arg du script
-  echo ""
-  echo "help! tape juste le nom de la commande pour voir l'aide"
-  echo ""
+  show_help
 
 elif [ "$1" == "--create" ];then
   echo ""
@@ -33,31 +43,42 @@ elif [ "$1" == "--create" ];then
   # pour test sans docker on supprime 1 pour cohérence
   max=$(($max-1))
 
-  # 1ere boucle de 1 à x machines
+  # On boucle sur le nbre de machines a faire
   for i in $(seq $min $max);do
     echo "docker run -tid --name $USER-alpine-$i alpine:latest"
+    docker run -tid --name $USER-alpine-$i alpine:latest
   done
-  echo "${nb_machines} machines créés"
+  echo "${nb_machines} machines créées"
 
 elif [ "$1" == "--drop" ];then
   echo ""
   echo "L'option choisie est "$1
   echo ""
   echo "docker rm -f $USER-alpine"
-  echo 'Drop ts les conteneurs de jean'
+  echo 'Drop ts les conteneurs jean-alpine'
   echo "docker rm -f \$(docker ps -a \| grep \$USER-alpine | awk '{print \$1}')"
-  # docker rm -f $(docker ps -a | grep $USER-alpine | awk '{print $1}')  
   echo "recupere les id \$1 présent en 1ere colonne de docker ps des conteneurs s'appelant $USER-alpine"
+  docker rm -f $(docker ps -a | grep $USER-alpine | awk '{print $1}')  
 
 elif [ "$1" == "--info" ];then
   echo ""
   echo "L'option choisie est "$1
   echo ""
+  for conteneur in $(docker ps -a | grep $USER-alpine | awk '{print $1}');do
+    docker inspect --format='{{.Name}} -- {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $conteneur
+  done
 
 elif [ "$1" == "--start" ];then
   echo ""
   echo "L'option choisie est "$1
   echo ""
+  docker start $(docker ps -a | grep $USER-alpine | awk '{print $1}')
+
+elif [ "$1" == "--stop" ];then
+  echo ""
+  echo "L'option choisie est "$1
+  echo ""
+  docker stop $(docker ps -a | grep $USER-alpine | awk '{print $1}')
 
 elif [ "$1" == "--ansible" ];then
   echo ""
@@ -65,13 +86,5 @@ elif [ "$1" == "--ansible" ];then
   echo ""
 
 else
-  echo "
-  Options :
-  - --help : affiche l'aide
-  - --create : lancer des conteneurs
-  - --drop : supprimer les conteneurs créer par deploy.sh
-  - --info : caractéristiques des conteneurs (ip,nom,user ...)
-  - --start : redémarrage des conteneurs
-  - --ansible : déploiement arborescence ansible
-  "
+  show_help
 fi
