@@ -17,11 +17,21 @@ elif [ "$1" == "--create" ];then
 echo ""
 echo "L'option choisie est "$1
 echo ""
+# test pour savoir si un second argument est présent
+# pas d'espace pour définir une variable
+nb_machine=1
+[ "$2" != "" ] && nb_machine=$2
+
+echo "docker run -tid --name $USER-alpine alpine:latest"
+
+echo "${nb_machine} machines créés"
 
 elif [ "$1" == "--drop" ];then
 echo ""
 echo "L'option choisie est "$1
 echo ""
+echo "docker rm -f $USER-alpine"
+echo 'Drop ts les conteneurs de jean'
 
 elif [ "$1" == "--info" ];then
 echo ""
