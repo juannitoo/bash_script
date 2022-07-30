@@ -1,3 +1,3 @@
 # bash_script
 Tuto pour apprendre les bases des scripts bash
-via WSL
+via WSL et nano
